@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33712.159
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSwitchFileRenamingWorking", "WebSwitchFileRenamingWorking\WebSwitchFileRenamingWorking.csproj", "{12D0A7E8-5864-4205-B717-95DC93DA7908}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{12D0A7E8-5864-4205-B717-95DC93DA7908}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12D0A7E8-5864-4205-B717-95DC93DA7908}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12D0A7E8-5864-4205-B717-95DC93DA7908}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12D0A7E8-5864-4205-B717-95DC93DA7908}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C9196D76-ABFA-4DE2-B72B-998F8E711025}
+	EndGlobalSection
+EndGlobal
