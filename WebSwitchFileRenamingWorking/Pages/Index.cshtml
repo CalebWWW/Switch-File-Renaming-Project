@@ -4,7 +4,98 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+    <style>
+        .green-text {
+            color: green;
+        }
+
+        .red-text {
+            color: darkred;
+        }
+
+    </style>
+
+    <script>
+        function choseFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+    
+            if (file) {
+                console.log('Selected file:', file.name);
+                toggleVisibilityOn('recievedRequest');
+                toggleVisibilityOff('invalidRequest');
+                submitValidRequest(file)
+            } else {
+                console.log('No file selected.');
+                toggleVisibilityOn('invalidRequest');
+                toggleVisibilityOff('recievedRequest');
+            }
+        }
+
+        function toggleVisibilityOn(id) {
+            var element = document.getElementById(id);
+            element.style.display = 'block';
+        }
+
+        function toggleVisibilityOff(id) {
+            var element = document.getElementById(id);
+            element.style.display = 'none';
+        }
+
+        function submitValidRequest(file) {
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                fetch('@Url.Page("Index")', {
+                    method: 'POST',
+                    body: formData,
+                })
+                    .then(response => response.text())
+                    .then(data => {
+                        // Handle the response from the server (e.g., display it on the page)
+                        document.getElementById('result').innerText = data;
+                    })
+                    .catch(error => {
+                        // Handle the error
+                        console.error(error);
+                    });
+            } else {
+                console.log('No file selected.');
+            }
+        }
+
+        function deselectFile(fileInput) {
+            fileInput.value = '';
+        }
+
+    </script>
+
+
+
+    <div>
+        <input type="checkbox" id="checkboxUiFiles" onclick="setReplaceUiFiles()">
+        <label for="checkboxUiFiles">Rename UI All Files</label>
+    </div>
+    <div>
+        <input type="checkbox" id="checkboxFighterFiles" onclick="setReplaceFighterFiles()">
+        <label for="checkboxFighterFiles">Rename All Fighter Files</label>
+    </div>
+    <div>
+        <input type="checkbox" id="checkboxJsonFiles" onclick="setEditJson()">
+        <label for="checkboxJsonFiles">Edit Json</label>
+    </div>
+    <div>
+        <label for="fileInput">Select a file:</label>
+        <input type="file" id="fileInput" name="files">
+    </div>
+    <div>
+        <button onclick="choseFile()">Refactor</button>
+    </div>
+    <div id="result"></div>
+    <rr>
+        <label id="recievedRequest" style="display: none;" class="green-text">Request Recieved</label>
+    </rr>
+    <ir>
+        <label id="invalidRequest" style="display: none;" class="red-text">Choose a File First</label>
+    </ir>

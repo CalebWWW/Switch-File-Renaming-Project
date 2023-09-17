@@ -12,9 +12,23 @@ namespace WebSwitchFileRenamingWorking.Pages
             _logger = logger;
         }
 
-        public void OnGet()
+        public IActionResult OnPost(IFormFile file)
         {
+            if (file != null && file.Length > 0)
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    file.CopyTo(memoryStream);
+                    byte[] fileData = memoryStream.ToArray();
 
+                    // Your C# logic here, you can process the fileData as needed
+                    // For example, save it to the database, perform some operations, etc.
+                }
+
+                return new JsonResult("File received successfully.");
+            }
+
+            return BadRequest("No file received.");
         }
     }
 }
