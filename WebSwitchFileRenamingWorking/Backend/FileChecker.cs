@@ -15,28 +15,7 @@
 
         public void FindTheNameOfCurrentFiles(string path, HelperFunctions help)
         {
-            //Entering the fighter folder
-            var fighterPath = help.ScanForFileName("fighter", path);
-            if (fighterPath.Equals("error"))
-            {
-                log += "Fighter path error \n";
-                return;
-            }
-
-            //Entering the character specific folder
-            fighterPath = help.EnterFolder(fighterPath);
-
-            //Entering Model Folder
-            fighterPath = help.EnterFolder(fighterPath);
-
-            //Entering first folder in the hub
-            fighterPath = help.EnterFolder(fighterPath);
-            string[] characterHubDirectories = Directory.GetFileSystemEntries(fighterPath);
-            string currentPath = characterHubDirectories.First();
-            
-            var index = currentPath.LastIndexOf("c0");
-
-            log += $"The current path is: {currentPath.Substring(index, 3)} \n";
+            log += $"The current path is: {help.FindExistingFileDirectory(path)} \n";
         }
 
         public void FindAllFilesInBaseDirectory(string path, HelperFunctions help)

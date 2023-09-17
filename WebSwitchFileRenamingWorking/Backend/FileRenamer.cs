@@ -143,12 +143,27 @@
             var help = new HelperFunctions();
             var c00Keep = UserPreferences.FileToKeep;
             var c00NewPosition = UserPreferences.LocationToMove;
-
-            //Enter man folder
-            path = help.EnterFolder(path);
-
-            if (!c00Keep.Equals("c0") && !c00NewPosition.Equals("c0"))
+            bool foundCorrectDirectory = false;
+            //Get to the base directory
+            for (int i = 0; i < 3; i++)
             {
+                if (!help.CheckToSeeIfThisIsCorrectDirectory(path, "config.json"))
+                    path = help.EnterFolder(path);
+                else
+                {
+                    foundCorrectDirectory = true;
+                    break;
+                }
+            }
+
+            if (foundCorrectDirectory)
+            {
+                var existingLocation = c00Keep.Equals("c0") ? help.FindExistingFileDirectory(path) : c00Keep;
+
+                //If there is more than one file in the directory, return
+                if (existingLocation.Length > 3)
+                    return false;
+
                 string jsonContent = string.Empty;
                 try
                 {
@@ -161,7 +176,7 @@
                 }
 
                 // Replace the desired string character using the Replace method
-                string modifiedJsonContent = jsonContent.Replace(c00Keep, c00NewPosition);
+                string modifiedJsonContent = jsonContent.Replace(existingLocation, c00NewPosition);
 
                 // Write the modified content back to the file
                 File.WriteAllText(path, modifiedJsonContent);

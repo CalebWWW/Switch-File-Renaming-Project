@@ -1,4 +1,7 @@
-﻿namespace WebSwitchFileRenamingWorking.Backend
+﻿using System.IO;
+using System.Reflection.Metadata.Ecma335;
+
+namespace WebSwitchFileRenamingWorking.Backend
 {
     public class HelperFunctions
     {
@@ -99,7 +102,6 @@
         /// </summary>
         /// <param name="path"></param>
         /// <param name="fileToDelete"></param>
-
         public void TryToDeleteAppend(string path, string fileToDelete)
         {
             try
@@ -121,6 +123,31 @@
                 Directory.Delete($"{path}\\{fileToDelete}", true);
             }
             catch { }
+        }
+
+        public string FindExistingFileDirectory(string path)
+        {
+            //Entering the fighter folder
+            var fighterPath = ScanForFileName("fighter", path);
+            if (fighterPath.Equals("error"))
+            {
+                return "Fighter path error \n";
+            }
+
+            //Entering the character specific folder
+            fighterPath = EnterFolder(fighterPath);
+
+            //Entering Model Folder
+            fighterPath = EnterFolder(fighterPath);
+
+            //Entering first folder in the hub
+            fighterPath = EnterFolder(fighterPath);
+            string[] characterHubDirectories = Directory.GetFileSystemEntries(fighterPath);
+            string currentPath = characterHubDirectories.First();
+
+            var index = currentPath.LastIndexOf("c0");
+
+            return currentPath.Substring(index, 3);
         }
     }
 }

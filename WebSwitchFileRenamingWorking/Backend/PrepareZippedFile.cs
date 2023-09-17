@@ -1,4 +1,5 @@
 ﻿using System.IO.Compression;
+using System.Reflection.Metadata.Ecma335;
 using SharpCompress.Archives;
 using SharpCompress.Common;
 
@@ -14,65 +15,61 @@ namespace WebSwitchFileRenamingWorking.Backend
         public string BeginReplacementProcess(string fileName)
         {
             var fileRenamer = new FileRenamer();
-            var log = "";
 
-            if (!fileName.Contains("zip")) fileName = fileName + ".zip";
-            var filePath = $"C:\\Users\\dutch\\Desktop\\Switch Modding\\SwitchRenamingZip\\{fileName}";
-
-            if (IsRarFile)
-                if (!UnzipRarFile(filePath))
-                    return Log;
-            if (!UnzipFile(filePath))
-                return Log;
-
-            filePath = $"C:\\Users\\dutch\\Desktop\\Switch Modding\\SwitchRenamingProj";
+            if (!PrepareFiles(fileName)) return Log;
+            var filePath = $"C:\\Users\\dutch\\Desktop\\Switch Modding\\SwitchRenamingProj";
 
             if (UserPreferences.ReplaceUi)
             {
                 if (fileRenamer.ReplaceUiFiles(filePath))
-                    log += " UI file renaming was a success";
+                    Log += " UI file renaming was a success";
                 else
-                    log += " Ui file renaming failed";
+                    Log += " Ui file renaming failed";
             }
             if (UserPreferences.ReplaceFighter)
             {
                 if (fileRenamer.ReplaceFighterFiles(filePath))
-                    log += " Fighter file renaming was a success";
+                    Log += " Fighter file renaming was a success";
                 else
-                    log += " Fighter file renaming failed";
+                    Log += " Fighter file renaming failed";
             }
             if (UserPreferences.ReplaceJson)
             {
                 if (fileRenamer.ReplaceJsonFiles(filePath))
-                    log += " Json file renaming was a success";
+                    Log += " Json file renaming was a success";
                 else
-                    log += " Json file renaming failed";
+                    Log += " Json file renaming failed";
             }
 
-            return log;
+            return Log;
         }
 
         public string BeginCheckProcess(string fileName)
         {
             var fileChecker = new FileChecker();
 
-            fileName = IsRarFile ? fileName : fileName + ".zip";
+            if (!PrepareFiles(fileName)) return Log;
+            var filePath = $"C:\\Users\\dutch\\Desktop\\Switch Modding\\SwitchRenamingProj";
+
+            Log = fileChecker.Check(filePath);
+            return Log;
+        }
+
+        public bool PrepareFiles(string fileName)
+        {
+            fileName = IsRarFile ? fileName : fileName.Contains(".zip") ? fileName : fileName + ".zip";
             var filePath = $"C:\\Users\\dutch\\Desktop\\Switch Modding\\SwitchRenamingZip\\{fileName}";
             if (IsRarFile)
             {
                 if (!UnzipRarFile(filePath))
-                    return Log;
+                    return false;
             }
             else
             {
                 if (!UnzipFile(filePath))
-                    return Log;
+                    return false;
             }
-
-            filePath = $"C:\\Users\\dutch\\Desktop\\Switch Modding\\SwitchRenamingProj";
-
-            Log = fileChecker.Check(filePath);
-            return Log;
+            return true;
         }
 
         public bool UnzipFile(string zipFilePath)
