@@ -1,34 +1,83 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using WebSwitchFileRenamingWorking.Backend;
 
 namespace WebSwitchFileRenamingWorking.Pages
 {
-    public class IndexModel : PageModel
+    public partial class IndexModel : PageModel
     {
         private readonly ILogger<IndexModel> _logger;
+        public Stack<string> Titles { get; set; }
+        public string ResultStatus { get; set; }
+        [BindProperty]
+        public IFormFile UploadedFile { get; set; }
+        [BindProperty]
+        public List<int> AreChecked { get; set; }
+        [BindProperty]
+        public string UserInputMoveFileTo { get; set; }
+        [BindProperty]
+        public string UserInputKeepFile { get; set; }
+        [BindProperty]
+        public string LargeFileName { get; set; }
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public IndexModel(ILogger<IndexModel> logger)
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             _logger = logger;
+            ResultStatus = "";
+            AreChecked = new List<int>();
+            Titles = new Stack<string>();
+            Titles.Push("Rename the Json");
+            Titles.Push("Rename Fighter Files");
+            Titles.Push("Rename Ui Files");
+            UserInputMoveFileTo = "";
+            UserInputKeepFile = "x";
         }
 
-        public IActionResult OnPost(IFormFile file)
+        public void OnPostSubmit()
         {
-            if (file != null && file.Length > 0)
+            SetPreferences(AreChecked);
+            var unzipper = new PrepareZippedFile();
+
+            if (UploadedFile is null)
             {
-                using (var memoryStream = new MemoryStream())
+                if (LargeFileName.Equals(""))
                 {
-                    file.CopyTo(memoryStream);
-                    byte[] fileData = memoryStream.ToArray();
-
-                    // Your C# logic here, you can process the fileData as needed
-                    // For example, save it to the database, perform some operations, etc.
+                    ResultStatus = "File is null";
+                    return;
                 }
-
-                return new JsonResult("File received successfully.");
+                ResultStatus = unzipper.BeginReplacementProcess(LargeFileName);
             }
+            else
+                ResultStatus = unzipper.BeginReplacementProcess(UploadedFile.FileName);
+        }
 
-            return BadRequest("No file received.");
+        public void OnPostSecondButton()
+        {
+            SetPreferences(AreChecked);
+            var unzipper = new PrepareZippedFile();
+
+            if (UploadedFile is null)
+            {
+                if (LargeFileName.Equals(""))
+                {
+                    ResultStatus = "File is null";
+                    return;
+                }
+                ResultStatus = unzipper.BeginCheckProcess(LargeFileName);
+            }
+            else
+                ResultStatus = unzipper.BeginCheckProcess(UploadedFile.FileName);
+        }
+
+        public void SetPreferences(List<int> Checked)
+        {
+            UserPreferences.ReplaceUi = Checked.Contains(0);
+            UserPreferences.ReplaceFighter = Checked.Contains(1);
+            UserPreferences.ReplaceJson = Checked.Contains(2);
+            UserPreferences.FileToKeep = $"c0{UserInputKeepFile}";
+            UserPreferences.LocationToMove= $"c0{UserInputMoveFileTo}";
         }
     }
 }
