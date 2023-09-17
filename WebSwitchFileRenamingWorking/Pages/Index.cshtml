@@ -9,7 +9,7 @@
         <label for="fileInput">Select a file:</label>
         <input type="file" id="fileInput" name="UploadedFile">
         <br/>
-        @for (var i = 0; i <= 2; i++)
+        @for (var i = 0; i <= 3; i++)
         {
             <input name="AreChecked" type="checkbox" value="@i" /> @Model.Titles.Pop()
             <br/>
@@ -32,17 +32,7 @@
         <br/>
         <button>Submit</button>
     </form>
-
-    <script>
-        // Function to save the file input value before form submission
-        function saveFileInputValue() {
-            var fileInput = document.getElementById("fileInput");
-            fileInput.setAttribute("data-saved-value", fileInput.value);
-        }
-
-        // Restore the file input value after form submission (e.g., in your OnPostSecondButton handler)
-        // You can use the value stored in "data-saved-value" attribute.
-    </script>
 </div>
 <br/>
 <div>@Model.ResultStatus</div>
+

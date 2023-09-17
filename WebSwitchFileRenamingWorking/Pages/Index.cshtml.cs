@@ -28,6 +28,7 @@ namespace WebSwitchFileRenamingWorking.Pages
             ResultStatus = "";
             AreChecked = new List<int>();
             Titles = new Stack<string>();
+            Titles.Push("Is a .rar file");
             Titles.Push("Rename the Json");
             Titles.Push("Rename Fighter Files");
             Titles.Push("Rename Ui Files");
@@ -55,20 +56,18 @@ namespace WebSwitchFileRenamingWorking.Pages
 
         public void OnPostSecondButton()
         {
+
             SetPreferences(AreChecked);
             var unzipper = new PrepareZippedFile();
 
-            if (UploadedFile is null)
+            if (UploadedFile is null && string.IsNullOrEmpty(LargeFileName))
             {
-                if (LargeFileName.Equals(""))
-                {
-                    ResultStatus = "File is null";
-                    return;
-                }
-                ResultStatus = unzipper.BeginCheckProcess(LargeFileName);
+                ResultStatus = "File is null";
+                return;
             }
-            else
-                ResultStatus = unzipper.BeginCheckProcess(UploadedFile.FileName);
+
+            string fileName = UploadedFile is null ? LargeFileName : UploadedFile.FileName;
+            ResultStatus = unzipper.BeginCheckProcess(fileName);
         }
 
         public void SetPreferences(List<int> Checked)
@@ -76,6 +75,7 @@ namespace WebSwitchFileRenamingWorking.Pages
             UserPreferences.ReplaceUi = Checked.Contains(0);
             UserPreferences.ReplaceFighter = Checked.Contains(1);
             UserPreferences.ReplaceJson = Checked.Contains(2);
+            UserPreferences.IsRarFile = Checked.Contains(3);
             UserPreferences.FileToKeep = $"c0{UserInputKeepFile}";
             UserPreferences.LocationToMove= $"c0{UserInputMoveFileTo}";
         }

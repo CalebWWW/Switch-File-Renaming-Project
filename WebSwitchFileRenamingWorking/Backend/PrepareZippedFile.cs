@@ -1,5 +1,6 @@
 ﻿using System.IO.Compression;
-using WebSwitchFileRenamingWorking.Backend;
+using SharpCompress.Archives;
+using SharpCompress.Common;
 
 namespace WebSwitchFileRenamingWorking.Backend
 {
@@ -8,6 +9,7 @@ namespace WebSwitchFileRenamingWorking.Backend
 
         public string destinationFolder = "C:\\Users\\dutch\\Desktop\\Switch Modding\\SwitchRenamingProj";
         public string Log = "";
+        public bool IsRarFile = UserPreferences.IsRarFile;
 
         public string BeginReplacementProcess(string fileName)
         {
@@ -17,6 +19,9 @@ namespace WebSwitchFileRenamingWorking.Backend
             if (!fileName.Contains("zip")) fileName = fileName + ".zip";
             var filePath = $"C:\\Users\\dutch\\Desktop\\Switch Modding\\SwitchRenamingZip\\{fileName}";
 
+            if (IsRarFile)
+                if (!UnzipRarFile(filePath))
+                    return Log;
             if (!UnzipFile(filePath))
                 return Log;
 
@@ -50,38 +55,31 @@ namespace WebSwitchFileRenamingWorking.Backend
         public string BeginCheckProcess(string fileName)
         {
             var fileChecker = new FileChecker();
-            var log = "";
 
-            if (!fileName.Contains("zip")) fileName = fileName + ".zip";
+            fileName = IsRarFile ? fileName : fileName + ".zip";
             var filePath = $"C:\\Users\\dutch\\Desktop\\Switch Modding\\SwitchRenamingZip\\{fileName}";
-
-            if (!UnzipFile(filePath))
-                return Log;
+            if (IsRarFile)
+            {
+                if (!UnzipRarFile(filePath))
+                    return Log;
+            }
+            else
+            {
+                if (!UnzipFile(filePath))
+                    return Log;
+            }
 
             filePath = $"C:\\Users\\dutch\\Desktop\\Switch Modding\\SwitchRenamingProj";
 
-            log = fileChecker.Check(filePath);
-
-            return log;
+            Log = fileChecker.Check(filePath);
+            return Log;
         }
 
-            public bool UnzipFile(string zipFilePath)
+        public bool UnzipFile(string zipFilePath)
         {
+            DeleteAllFilesInDestination();
             try
             {
-                string[] destinationStaleFiles = Directory.GetFileSystemEntries(destinationFolder);
-                foreach (string existingFolder in destinationStaleFiles)
-                {
-                    try
-                    {
-                        Directory.Delete(existingFolder, true);
-                    } catch
-                    { 
-                        //If the directory fiails to delete, it must be the config or a read me
-                        File.Delete(existingFolder);
-                    }
-                }
-
                 ZipFile.ExtractToDirectory(zipFilePath, destinationFolder);
                 return true;
             }
@@ -101,6 +99,48 @@ namespace WebSwitchFileRenamingWorking.Backend
                 Log += " Unknown unzipping error";
             }
             return false;
+        }
+
+        public bool UnzipRarFile(string zipFilePath)
+        {
+            DeleteAllFilesInDestination();
+            try
+            {
+                // Open the RAR file for extraction
+                using (var archive = ArchiveFactory.Open(zipFilePath))
+                {
+                    foreach (var entry in archive.Entries.Where(entry => !entry.IsDirectory))
+                    {
+                        // Extract the entry
+                        entry.WriteToDirectory(destinationFolder, new ExtractionOptions
+                        {
+                            ExtractFullPath = true,
+                            Overwrite = true
+                        });
+                    }
+                    return true;
+                }
+            } catch (Exception) 
+            {
+                return false;
+            }
+        }
+
+        public void DeleteAllFilesInDestination()
+        {
+            string[] destinationStaleFiles = Directory.GetFileSystemEntries(destinationFolder);
+            foreach (string existingFolder in destinationStaleFiles)
+            {
+                try
+                {
+                    Directory.Delete(existingFolder, true);
+                }
+                catch
+                {
+                    //If the directory fiails to delete, it must be the config or a read me
+                    File.Delete(existingFolder);
+                }
+            }
         }
     }
 }

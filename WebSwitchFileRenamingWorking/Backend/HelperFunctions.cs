@@ -58,7 +58,7 @@
             string[] internalFolders = Directory.GetFileSystemEntries(path);
             foreach (string folder in internalFolders)
             {
-                if (!folder.Equals($"{path}\\README.txt"))
+                if (!folder.Substring(folder.LastIndexOf("\\")).Contains(".txt"))
                     return folder;
             }
             throw new InvalidOperationException("Logfile cannot be read-only");
