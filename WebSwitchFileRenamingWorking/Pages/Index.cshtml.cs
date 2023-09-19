@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using SharpCompress.Common;
 using WebSwitchFileRenamingWorking.Backend;
 
 namespace WebSwitchFileRenamingWorking.Pages
@@ -7,6 +8,7 @@ namespace WebSwitchFileRenamingWorking.Pages
     public partial class IndexModel : PageModel
     {
         private readonly ILogger<IndexModel> _logger;
+        private string FilePath { get; set; }
         public Stack<string> Titles { get; set; }
         public string ResultStatus { get; set; }
         [BindProperty]
@@ -25,14 +27,16 @@ namespace WebSwitchFileRenamingWorking.Pages
 #pragma warning restore CS8618
         {
             _logger = logger;
-            ResultStatus = "";
+            ResultStatus = string.Empty;
             AreChecked = new List<int>();
             Titles = new Stack<string>();
             Titles.Push("Is a .rar file");
             Titles.Push("Rename the Json");
             Titles.Push("Rename Fighter Files");
             Titles.Push("Rename Ui Files");
-            UserInputMoveFileTo = "";
+            UserInputMoveFileTo = string.Empty;
+            LargeFileName = string.Empty;
+            FilePath = string.Empty;
             UserInputKeepFile = "x";
         }
 
@@ -40,34 +44,49 @@ namespace WebSwitchFileRenamingWorking.Pages
         {
             SetPreferences(AreChecked);
             var unzipper = new PrepareZippedFile();
-
-            if (UploadedFile is null)
-            {
-                if (LargeFileName.Equals(""))
-                {
-                    ResultStatus = "File is null";
-                    return;
-                }
-                ResultStatus = unzipper.BeginReplacementProcess(LargeFileName);
-            }
-            else
-                ResultStatus = unzipper.BeginReplacementProcess(UploadedFile.FileName);
+            string fileName = PrepareFile();
+            ResultStatus = unzipper.BeginReplacementProcess(fileName, FilePath);
         }
 
         public void OnPostSecondButton()
         {
-
             SetPreferences(AreChecked);
             var unzipper = new PrepareZippedFile();
+            string fileName = PrepareFile();
+            ResultStatus = unzipper.BeginCheckProcess(fileName, FilePath);
+        }
 
+        public void OnPostCreateFolders() 
+        {
+            try
+            {
+                string baseDirectoroy = Path.Combine(Directory.GetCurrentDirectory(), "AdjModdingDirectory");
+                Directory.CreateDirectory(baseDirectoroy);
+                string folder1Path = Path.Combine($"{Directory.GetCurrentDirectory()}\\AdjModdingDirectory", "ModdingInputZippedFilesHere");
+                string folder2Path = Path.Combine($"{Directory.GetCurrentDirectory()}\\AdjModdingDirectory", "ModdingOutputFolder");
+
+                Directory.CreateDirectory(folder1Path);
+                Directory.CreateDirectory(folder2Path);
+
+                ResultStatus = "The folders are created correctly! Put your zipped folders in the file: ModdingInputZippedFilesHere";
+            }
+            catch (Exception ex)
+            {
+                ResultStatus = "There was an error creating the folders";
+            }
+        }
+
+        public string PrepareFile()
+        {
             if (UploadedFile is null && string.IsNullOrEmpty(LargeFileName))
             {
                 ResultStatus = "File is null";
-                return;
+                return "";
             }
-
-            string fileName = UploadedFile is null ? LargeFileName : UploadedFile.FileName;
-            ResultStatus = unzipper.BeginCheckProcess(fileName);
+            FilePath = LargeFileName is null
+                ? Path.GetFullPath(UploadedFile.FileName)
+                : Path.GetFullPath(LargeFileName);
+            return UploadedFile is null ? LargeFileName : UploadedFile.FileName;
         }
 
         public void SetPreferences(List<int> Checked)

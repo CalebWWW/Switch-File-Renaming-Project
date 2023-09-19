@@ -8,16 +8,17 @@ namespace WebSwitchFileRenamingWorking.Backend
     public class PrepareZippedFile
     {
 
-        public string destinationFolder = "C:\\Users\\dutch\\Desktop\\Switch Modding\\SwitchRenamingProj";
+        public string destinationFolder = $"{Directory.GetCurrentDirectory()}\\AdjModdingDirectory\\ModdingOutputFolder";
+        public string baseFolder = $"{Directory.GetCurrentDirectory()}\\AdjModdingDirectory\\ModdingInputZippedFilesHere";
         public string Log = "";
         public bool IsRarFile = UserPreferences.IsRarFile;
 
-        public string BeginReplacementProcess(string fileName)
+        public string BeginReplacementProcess(string fileName, string originalLocation)
         {
             var fileRenamer = new FileRenamer();
 
             if (!PrepareFiles(fileName)) return Log;
-            var filePath = $"C:\\Users\\dutch\\Desktop\\Switch Modding\\SwitchRenamingProj";
+            var filePath = destinationFolder;
 
             if (UserPreferences.ReplaceUi)
             {
@@ -44,12 +45,12 @@ namespace WebSwitchFileRenamingWorking.Backend
             return Log;
         }
 
-        public string BeginCheckProcess(string fileName)
+        public string BeginCheckProcess(string fileName, string originalLocation)
         {
             var fileChecker = new FileChecker();
 
             if (!PrepareFiles(fileName)) return Log;
-            var filePath = $"C:\\Users\\dutch\\Desktop\\Switch Modding\\SwitchRenamingProj";
+            var filePath = destinationFolder;
 
             Log = fileChecker.Check(filePath);
             return Log;
@@ -58,7 +59,7 @@ namespace WebSwitchFileRenamingWorking.Backend
         public bool PrepareFiles(string fileName)
         {
             fileName = IsRarFile ? fileName : fileName.Contains(".zip") ? fileName : fileName + ".zip";
-            var filePath = $"C:\\Users\\dutch\\Desktop\\Switch Modding\\SwitchRenamingZip\\{fileName}";
+            var filePath = $"{baseFolder}\\{fileName}";
             if (IsRarFile)
             {
                 if (!UnzipRarFile(filePath))
