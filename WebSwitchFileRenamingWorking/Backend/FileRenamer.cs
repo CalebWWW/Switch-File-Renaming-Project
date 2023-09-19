@@ -158,7 +158,7 @@
 
             if (foundCorrectDirectory)
             {
-                var existingLocation = c00Keep.Equals("c0") ? help.FindExistingFileDirectory(path) : c00Keep;
+                var existingLocation = c00Keep.Equals("c0") ? help.FindExistingFileDirectory(path).Trim(): c00Keep;
 
                 //If there is more than one file in the directory, return
                 if (existingLocation.Length > 3)
@@ -243,8 +243,12 @@
                 {
                     if (c00Keep.Equals("c0"))
                     {
-                        var indexOfPlace = modify.IndexOf("c0");
-                        c00Keep = modify.Substring(indexOfPlace, 3);
+                        try
+                        {
+                            var indexOfPlace = modify.IndexOf("c0");
+                            c00Keep = modify.Substring(indexOfPlace, 3);
+                        }
+                        catch { }
                     }
                     if (!c00NewPosition.Equals("c0") && modify.Contains(c00Keep))
                     {

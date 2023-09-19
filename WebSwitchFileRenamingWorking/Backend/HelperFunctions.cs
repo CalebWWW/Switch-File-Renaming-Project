@@ -125,6 +125,10 @@ namespace WebSwitchFileRenamingWorking.Backend
             catch { }
         }
 
+        /// <summary>
+        /// Returns a list of all fighter slots in the fighter folder
+        /// </summary>
+        /// <param name="path"></param>
         public string FindExistingFileDirectory(string path)
         {
             //Entering the fighter folder
@@ -142,12 +146,15 @@ namespace WebSwitchFileRenamingWorking.Backend
 
             //Entering first folder in the hub
             fighterPath = EnterFolder(fighterPath);
+
+            string result = "";
             string[] characterHubDirectories = Directory.GetFileSystemEntries(fighterPath);
-            string currentPath = characterHubDirectories.First();
-
-            var index = currentPath.LastIndexOf("c0");
-
-            return currentPath.Substring(index, 3);
+            foreach (string currentPath in characterHubDirectories)
+            {
+                var index = currentPath.LastIndexOf("c0");
+                result += currentPath.Substring(index, 3) + " ";
+            }
+            return result;
         }
     }
 }

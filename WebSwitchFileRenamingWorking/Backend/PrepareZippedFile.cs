@@ -58,7 +58,9 @@ namespace WebSwitchFileRenamingWorking.Backend
 
         public bool PrepareFiles(string fileName)
         {
-            fileName = IsRarFile ? fileName : fileName.Contains(".zip") ? fileName : fileName + ".zip";
+            fileName = IsRarFile ? fileName.Contains("rar") 
+                ? fileName : fileName + ".rar"
+                : fileName.Contains(".zip") ? fileName : fileName + ".zip";
             var filePath = $"{baseFolder}\\{fileName}";
             if (IsRarFile)
             {
