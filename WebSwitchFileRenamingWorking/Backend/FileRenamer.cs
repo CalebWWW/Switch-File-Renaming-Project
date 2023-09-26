@@ -235,24 +235,24 @@
                 foreach (string modify in internalVoiceFolders)
                 {
                     //Deletes all fighter voice files
-                    if (!modify.Contains(c00Keep))
+                    if (!modify.Substring(modify.Length - 20).Contains(c00Keep))
                         File.Delete(modify);
                 }
 
-                foreach (string modify in internalVoiceFolders)
+                string[] newInternalVoiceFolders = Directory.GetFileSystemEntries(soundVoicePath);
+                foreach (string modify in newInternalVoiceFolders)
                 {
                     if (c00Keep.Equals("c0"))
                     {
-                        try
-                        {
                             var indexOfPlace = modify.IndexOf("c0");
-                            c00Keep = modify.Substring(indexOfPlace, 3);
-                        }
-                        catch { }
+                            if (indexOfPlace != -1)
+                                c00Keep = modify.Substring(indexOfPlace, 3);
                     }
                     if (!c00NewPosition.Equals("c0") && modify.Contains(c00Keep))
                     {
-                        var newFolderPath = modify.Replace(c00Keep, c00NewPosition);
+                        var indexOfPlace = modify.LastIndexOf("c0");
+                        var newFolderPath = modify.Remove(indexOfPlace, 3);
+                        newFolderPath = newFolderPath.Insert(indexOfPlace, c00NewPosition);
                         Directory.Move(modify, newFolderPath);
                     }
                 }
