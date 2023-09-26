@@ -1,5 +1,4 @@
 ﻿using System.IO.Compression;
-using System.Reflection.Metadata.Ecma335;
 using SharpCompress.Archives;
 using SharpCompress.Common;
 
@@ -13,7 +12,7 @@ namespace WebSwitchFileRenamingWorking.Backend
         public string Log = "";
         public bool IsRarFile = UserPreferences.IsRarFile;
 
-        public string BeginReplacementProcess(string fileName, string originalLocation)
+        public string BeginReplacementProcess(string fileName)
         {
             var fileRenamer = new FileRenamer();
 
@@ -45,7 +44,7 @@ namespace WebSwitchFileRenamingWorking.Backend
             return Log;
         }
 
-        public string BeginCheckProcess(string fileName, string originalLocation)
+        public string BeginCheckProcess(string fileName)
         {
             var fileChecker = new FileChecker();
 

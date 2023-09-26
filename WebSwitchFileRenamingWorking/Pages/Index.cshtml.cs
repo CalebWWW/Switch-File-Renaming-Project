@@ -45,7 +45,7 @@ namespace WebSwitchFileRenamingWorking.Pages
             SetPreferences(AreChecked);
             var unzipper = new PrepareZippedFile();
             string fileName = PrepareFile();
-            ResultStatus = unzipper.BeginReplacementProcess(fileName, FilePath);
+            ResultStatus = unzipper.BeginReplacementProcess(fileName);
         }
 
         public void OnPostSecondButton()
@@ -53,7 +53,7 @@ namespace WebSwitchFileRenamingWorking.Pages
             SetPreferences(AreChecked);
             var unzipper = new PrepareZippedFile();
             string fileName = PrepareFile();
-            ResultStatus = unzipper.BeginCheckProcess(fileName, FilePath);
+            ResultStatus = unzipper.BeginCheckProcess(fileName);
         }
 
         public void OnPostCreateFolders() 
@@ -70,7 +70,7 @@ namespace WebSwitchFileRenamingWorking.Pages
 
                 ResultStatus = "The folders are created correctly! Put your zipped folders in the file: ModdingInputZippedFilesHere";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 ResultStatus = "There was an error creating the folders";
             }
@@ -83,10 +83,14 @@ namespace WebSwitchFileRenamingWorking.Pages
                 ResultStatus = "File is null";
                 return "";
             }
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             FilePath = LargeFileName is null
                 ? Path.GetFullPath(UploadedFile.FileName)
                 : Path.GetFullPath(LargeFileName);
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+#pragma warning disable CS8603 // Possible null reference return.
             return UploadedFile is null ? LargeFileName : UploadedFile.FileName;
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
         public void SetPreferences(List<int> Checked)
