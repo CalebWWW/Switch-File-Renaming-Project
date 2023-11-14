@@ -1,9 +1,19 @@
+using WebSwitchFileRenamingWorking.Backend;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
+
+var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
+
+lifetime.ApplicationStopping.Register(() =>
+{
+    var help = new PrepareZippedFile();
+    help.DeleteAllFilesInDestination();
+});
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

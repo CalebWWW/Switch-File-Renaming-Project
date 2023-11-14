@@ -250,9 +250,11 @@
                         }
                         catch { }
                     }
-                    if (!c00NewPosition.Equals("c0") && modify.Contains(c00Keep))
+                    if (!c00NewPosition.Equals("c0") && modify.Substring(modify.Length - 20).Contains(c00Keep))
                     {
-                        var newFolderPath = modify.Replace(c00Keep, c00NewPosition);
+                        string prefix = modify.Substring(0, modify.Length - 20);
+                        string suffix = modify.Substring(modify.Length - 20);
+                        var newFolderPath = prefix + suffix.Replace(c00Keep, c00NewPosition);
                         Directory.Move(modify, newFolderPath);
                     }
                 }

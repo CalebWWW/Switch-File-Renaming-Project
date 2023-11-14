@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using SharpCompress.Common;
+using System;
 using WebSwitchFileRenamingWorking.Backend;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace WebSwitchFileRenamingWorking.Pages
 {
@@ -83,14 +85,14 @@ namespace WebSwitchFileRenamingWorking.Pages
                 ResultStatus = "File is null";
                 return "";
             }
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
+#pragma warning disable CS8602
             FilePath = LargeFileName is null
                 ? Path.GetFullPath(UploadedFile.FileName)
                 : Path.GetFullPath(LargeFileName);
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-#pragma warning disable CS8603 // Possible null reference return.
+#pragma warning restore CS8602
+#pragma warning disable CS8603
             return UploadedFile is null ? LargeFileName : UploadedFile.FileName;
-#pragma warning restore CS8603 // Possible null reference return.
+#pragma warning restore CS8603
         }
 
         public void SetPreferences(List<int> Checked)

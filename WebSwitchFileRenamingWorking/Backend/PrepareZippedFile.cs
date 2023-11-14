@@ -106,19 +106,17 @@ namespace WebSwitchFileRenamingWorking.Backend
             try
             {
                 // Open the RAR file for extraction
-                using (var archive = ArchiveFactory.Open(zipFilePath))
+                var archive = ArchiveFactory.Open(zipFilePath);
+                foreach (var entry in archive.Entries.Where(entry => !entry.IsDirectory))
                 {
-                    foreach (var entry in archive.Entries.Where(entry => !entry.IsDirectory))
+                    // Extract the entry
+                    entry.WriteToDirectory(destinationFolder, new ExtractionOptions
                     {
-                        // Extract the entry
-                        entry.WriteToDirectory(destinationFolder, new ExtractionOptions
-                        {
-                            ExtractFullPath = true,
-                            Overwrite = true
-                        });
-                    }
-                    return true;
+                        ExtractFullPath = true,
+                        Overwrite = true
+                    });
                 }
+                return true;
             } catch (Exception) 
             {
                 return false;
